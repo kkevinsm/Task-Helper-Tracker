@@ -1,26 +1,79 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ============ Matcha Strawberry palette ============ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-cream: #fffaf5;
+
+  --color-matcha-50: #f4f8ef;
+  --color-matcha-100: #e6efdb;
+  --color-matcha-200: #cddfb9;
+  --color-matcha-300: #adc98f;
+  --color-matcha-400: #8daf69;
+  --color-matcha-500: #6f9450;
+  --color-matcha-600: #57773e;
+  --color-matcha-700: #445d33;
+  --color-matcha-800: #384b2d;
+  --color-matcha-900: #2f3f27;
+
+  --color-berry-50: #fff1f3;
+  --color-berry-100: #ffe1e7;
+  --color-berry-200: #ffc8d3;
+  --color-berry-300: #fda1b4;
+  --color-berry-400: #f8708f;
+  --color-berry-500: #ee4870;
+  --color-berry-600: #d9285a;
+  --color-berry-700: #b71c4b;
+  --color-berry-800: #991a45;
+  --color-berry-900: #831a41;
+
+  --font-sans: var(--font-dm-sans);
+  --font-serif: var(--font-cormorant);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(60rem 40rem at 0% 0%, rgb(255 225 231 / 0.7), transparent 60%),
+    radial-gradient(50rem 35rem at 100% 100%, rgb(230 239 219 / 0.85), transparent 60%);
+  background-attachment: fixed;
+  color: var(--color-matcha-900);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--color-berry-200);
+  color: var(--color-berry-900);
+}
+
+@utility card {
+  @apply rounded-3xl border border-white/80 bg-white/80 shadow-[0_10px_40px_-15px_rgb(87_119_62/0.25)] backdrop-blur;
+}
+
+@utility input {
+  @apply w-full rounded-xl border border-matcha-200 bg-white px-3.5 py-2.5 text-sm text-matcha-900 placeholder:text-matcha-400/70 outline-none transition focus:border-berry-300 focus:ring-4 focus:ring-berry-100;
+}
+
+@utility label {
+  @apply mb-1.5 block text-xs font-medium text-matcha-700;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60;
+}
+
+@utility btn-primary {
+  @apply btn bg-linear-to-r from-berry-500 to-berry-400 text-white shadow-md shadow-berry-200 hover:from-berry-600 hover:to-berry-500;
+}
+
+@utility btn-matcha {
+  @apply btn bg-linear-to-r from-matcha-600 to-matcha-500 text-white shadow-md shadow-matcha-200 hover:from-matcha-700 hover:to-matcha-600;
+}
+
+@utility btn-ghost {
+  @apply btn border border-matcha-200 bg-white text-matcha-700 hover:bg-matcha-50;
 }

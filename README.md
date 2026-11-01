@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍵 urtaskhelper 🍓
 
-## Getting Started
+Website tracking status pengerjaan joki tugas dengan palet warna **Matcha Strawberry (Green & Pink)**, dilengkapi dengan dashboard admin untuk manajemen antrean & pesanan, fitur upload file hasil tugas (PDF/Word/ZIP/Google Drive), dan integrasi WhatsApp.
 
-First, run the development server:
+---
+
+## ✨ Fitur Utama
+
+1. **Halaman Publik (Pelacak Pesanan)**
+   - Pencarian berdasarkan kode antrean (format otomatis: `ADA-001`, `ADA-002`, dst).
+   - Visual Stepper status progres (*Diterima* ➔ *Dikerjakan* ➔ *Selesai*).
+   - Penyamaran nama pemesan untuk menjaga privasi klien (contoh: `B**i S*****o`).
+   - Tombol download file hasil (PDF/Word/ZIP) dan link Google Drive (hanya aktif jika status **Selesai**).
+   - Tombol shortcut **Hubungi Admin via WhatsApp** langsung dengan pesan otomatis yang menyertakan kode dan judul tugas.
+
+2. **Dashboard & Panel Admin**
+   - Autentikasi aman melalui Supabase Auth.
+   - Proteksi multi-lapis: Next.js Proxy + Postgres Row Level Security (RLS) + Admin allowlist function.
+   - Kartu metrik: *Total Pesanan*, *Di Antrean*, *Dikerjakan*, *Selesai*.
+   - Filter status cepat (*Semua*, *Di Antrean*, *Dikerjakan*, *Selesai*, *Dibatalkan*).
+   - Form pembuatan & edit pesanan:
+     - Generate otomatis kode antrean unik (`ADA-xxx`).
+     - Upload file hasil langsung ke Supabase Storage (Private Bucket).
+     - Link alternatif (Google Drive).
+     - Catatan publik untuk klien & catatan privat untuk admin.
+     - Harga (privat untuk admin).
+     - Indikator peringatan deadline yang terlewat.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 16 (App Router, Turbopack, TypeScript)
+- **Styling:** Tailwind CSS v4 + Lucide React Icons
+- **Database, Auth & Storage:** Supabase (PostgreSQL, Supabase Auth, Storage Bucket `results`)
+- **Deployment:** Vercel
+
+---
+
+## 🚀 Langkah Setup Supabase
+
+1. Buat project baru di [supabase.com](https://supabase.com).
+2. Buka **SQL Editor** di dashboard Supabase Anda.
+3. Buka file [`supabase/schema.sql`](./supabase/schema.sql), salin seluruh isinya, dan klik **Run**.
+4. Di bagian akhir `supabase/schema.sql`, tambahkan email Anda ke tabel `public.admins`:
+   ```sql
+   insert into public.admins (email) values ('email-anda@gmail.com');
+   ```
+5. Buat akun admin Anda di menu **Authentication ➔ Users ➔ Add User ➔ Create User** (masukkan email yang sama dan password untuk login admin).
+
+---
+
+## 🔐 Environment Variables
+
+Salin `.env.example` ke `.env.local` dan isi nilainya:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...
+NEXT_PUBLIC_WHATSAPP_NUMBER=6281234567890
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 💻 Menjalankan di Lokal
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Install dependencies
+npm install
 
-## Learn More
+# Jalankan server development
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Buka `http://localhost:3000` di browser Anda.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🌐 Deployment ke Vercel
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Push repo ini ke GitHub:
+   ```bash
+   git add .
+   git commit -m "feat: complete urtaskhelper app"
+   git push origin main
+   ```
+2. Hubungkan repository ke Vercel atau jalankan `vercel` CLI.
+3. Masukkan Environment Variables di Vercel Dashboard (**Settings ➔ Environment Variables**):
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `NEXT_PUBLIC_WHATSAPP_NUMBER`
+4. Deploy! Domain target: `urtaskhelper.vercel.app`.
