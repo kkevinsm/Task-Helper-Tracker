@@ -1,6 +1,6 @@
-# 🍵 urtaskhelper 🍓
+# urtaskhelper
 
-Website tracking status pengerjaan joki tugas dengan palet warna **Matcha Strawberry (Green & Pink)**, dilengkapi dengan dashboard admin untuk manajemen antrean & pesanan, fitur upload file hasil tugas (PDF/Word/ZIP/Google Drive), dan integrasi WhatsApp.
+Website tracking status pengerjaan joki tugas, dilengkapi dengan dashboard admin untuk manajemen antrean & pesanan, fitur upload file hasil tugas (PDF/Word/ZIP/Google Drive), dan integrasi WhatsApp.
 
 ---
 
