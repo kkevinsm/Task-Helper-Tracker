@@ -193,7 +193,7 @@ export function OrderFormModal({
             <input type="date" className="input" value={form.deadline} onChange={(e) => set("deadline", e.target.value)} />
           </Field>
           <Field label="Harga (Rp, opsional — hanya admin)">
-            <input type="number" min={0} step={1000} className="input" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="50000" />
+            <input type="number" min={0} step="any" className="input" value={form.price} onChange={(e) => set("price", e.target.value)} placeholder="50000" />
           </Field>
           <Field label="Catatan untuk Klien (tampil di halaman tracking)" full>
             <textarea className="input min-h-20" value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder="Contoh: Revisi maksimal 2x. Pembayaran DP 50% sudah diterima." />
