@@ -25,7 +25,8 @@ export async function GET(
     .eq("tracking_code", trackingCode)
     .maybeSingle();
 
-  if (error || !order || order.status !== "completed" || !order.result_file_path) {
+  const isCompleted = order?.status === "completed" || order?.status === "revision_completed";
+  if (error || !order || !isCompleted || !order.result_file_path) {
     return new Response("File tidak tersedia.", { status: 404 });
   }
 

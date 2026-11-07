@@ -1,4 +1,10 @@
-export type OrderStatus = "pending" | "in_progress" | "completed" | "cancelled";
+export type OrderStatus =
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "revision"
+  | "revision_completed"
+  | "cancelled";
 
 /** Full row — only visible to admins (RLS). */
 export type Order = {

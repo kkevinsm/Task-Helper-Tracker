@@ -15,6 +15,7 @@ import {
   Pencil,
   Plus,
   RefreshCw,
+  RotateCcw,
   Search,
   Tag,
   Trash2,
@@ -34,6 +35,8 @@ const FILTERS: Array<{ key: Filter; label: string }> = [
   { key: "pending", label: "Di Antrean" },
   { key: "in_progress", label: "Dikerjakan" },
   { key: "completed", label: "Selesai" },
+  { key: "revision", label: "Sedang Revisi" },
+  { key: "revision_completed", label: "Selesai Revisi" },
   { key: "cancelled", label: "Dibatalkan" },
 ];
 
@@ -96,6 +99,7 @@ export function Dashboard() {
       pending: count("pending"),
       in_progress: count("in_progress"),
       completed: count("completed"),
+      revision: count("revision"),
     };
   }, [orders]);
 
@@ -181,11 +185,12 @@ export function Dashboard() {
         </div>
 
         {/* Stats */}
-        <div className="mt-7 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <Stat icon={ClipboardList} label="Total Pesanan" value={stats.total} tone="bg-white text-matcha-700" iconTone="bg-matcha-100 text-matcha-600" />
           <Stat icon={Hourglass} label="Di Antrean" value={stats.pending} tone="bg-amber-50/80 text-amber-800" iconTone="bg-amber-100 text-amber-600" />
           <Stat icon={Wrench} label="Dikerjakan" value={stats.in_progress} tone="bg-berry-50/80 text-berry-800" iconTone="bg-berry-100 text-berry-600" />
           <Stat icon={CheckCircle2} label="Selesai" value={stats.completed} tone="bg-matcha-50/80 text-matcha-800" iconTone="bg-matcha-200 text-matcha-700" />
+          <Stat icon={RotateCcw} label="Sedang Revisi" value={stats.revision} tone="bg-rose-50/80 text-rose-800" iconTone="bg-rose-100 text-rose-600" />
         </div>
 
         {/* Toolbar */}
@@ -294,6 +299,46 @@ export function Dashboard() {
                       </div>
 
                       <div className="flex shrink-0 flex-wrap items-center gap-2">
+                        {/* Tombol aksi cepat revisi */}
+                        {o.status === "revision" ? (
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => void updateStatus(o, "revision_completed")}
+                              className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white shadow-xs shadow-emerald-200 transition hover:bg-emerald-700"
+                              title="Tandai revisi selesai dikerjakan"
+                            >
+                              <CheckCircle2 className="size-3" /> Selesai Revisi
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void updateStatus(o, "completed")}
+                              className="inline-flex items-center gap-1 rounded-full border border-stone-200 bg-white px-2 py-1.5 text-xs text-stone-600 transition hover:bg-stone-50"
+                              title="Batalkan status revisi kembali ke selesai"
+                            >
+                              Batal
+                            </button>
+                          </div>
+                        ) : o.status === "revision_completed" ? (
+                          <button
+                            type="button"
+                            onClick={() => void updateStatus(o, "revision")}
+                            className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+                            title="Ajukan revisi kembali"
+                          >
+                            <RotateCcw className="size-3" /> Revisi Lagi
+                          </button>
+                        ) : o.status !== "cancelled" ? (
+                          <button
+                            type="button"
+                            onClick={() => void updateStatus(o, "revision")}
+                            className="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100"
+                            title="Aktifkan tahap revisi untuk pesanan ini (memunculkan poin 4 & 5 di halaman publik)"
+                          >
+                            <RotateCcw className="size-3" /> Ada Revisi
+                          </button>
+                        ) : null}
+
                         <div className="relative">
                           <span className={cn("pointer-events-none absolute top-1/2 left-2.5 size-1.5 -translate-y-1/2 rounded-full", meta.dot)} />
                           <select

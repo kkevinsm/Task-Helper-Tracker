@@ -34,6 +34,16 @@ export const STATUS_META: Record<
     badge: "bg-matcha-50 text-matcha-700 ring-matcha-200",
     dot: "bg-matcha-500",
   },
+  revision: {
+    label: "Sedang Revisi",
+    badge: "bg-rose-50 text-rose-700 ring-rose-200",
+    dot: "bg-rose-500",
+  },
+  revision_completed: {
+    label: "Selesai Revisi",
+    badge: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+    dot: "bg-emerald-500",
+  },
   cancelled: {
     label: "Dibatalkan",
     badge: "bg-stone-100 text-stone-600 ring-stone-200",

@@ -205,7 +205,7 @@ export function OrderFormModal({
           <div className="rounded-2xl border border-dashed border-matcha-300 bg-matcha-50/50 p-4 sm:col-span-2">
             <p className="text-sm font-semibold text-matcha-800">Hasil Pengerjaan</p>
             <p className="mt-0.5 text-xs text-matcha-500">
-              Hanya bisa diunduh klien saat status <b>Selesai</b>.
+              Hanya bisa diunduh klien saat status <b>Selesai</b> atau <b>Selesai Revisi</b>.
             </p>
 
             <div className="mt-3 space-y-3">

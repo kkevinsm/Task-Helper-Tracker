@@ -14,18 +14,41 @@ import {
 import type { PublicOrder } from "@/lib/types";
 import { STATUS_META, cn, formatDate, formatShortDate, whatsappLink } from "@/lib/utils";
 
-const STEPS = [
+const BASE_STEPS = [
   { key: "pending", label: "Diterima" },
   { key: "in_progress", label: "Dikerjakan" },
   { key: "completed", label: "Selesai" },
 ] as const;
 
+const REVISION_STEPS = [
+  { key: "pending", label: "Diterima" },
+  { key: "in_progress", label: "Dikerjakan" },
+  { key: "completed", label: "Selesai" },
+  { key: "revision", label: "Revisi" },
+  { key: "revision_completed", label: "Selesai Revisi" },
+] as const;
+
 export function OrderResult({ order }: { order: PublicOrder }) {
   const meta = STATUS_META[order.status];
   const cancelled = order.status === "cancelled";
-  const activeIndex = cancelled ? -1 : STEPS.findIndex((s) => s.key === order.status);
-  const stepDates = [order.created_at, order.started_at, order.completed_at];
-
+  const hasRevision =
+    order.status === "revision" || order.status === "revision_completed";
+  const steps = hasRevision ? REVISION_STEPS : BASE_STEPS;
+  const activeIndex = cancelled
+    ? -1
+    : steps.findIndex((s) => s.key === order.status);
+  const stepDates = hasRevision
+    ? [
+        order.created_at,
+        order.started_at,
+        order.completed_at,
+        order.updated_at,
+        order.status === "revision_completed" ? order.completed_at : null,
+      ]
+    : [order.created_at, order.started_at, order.completed_at];
+  const isCompletedFinal =
+    (!hasRevision && order.status === "completed") ||
+    (hasRevision && order.status === "revision_completed");
   const wa = whatsappLink(
     `Halo kak, saya mau tanya progres tugas dengan kode antrean ${order.tracking_code} (${order.title}). Terima kasih 🙏`,
   );
@@ -61,8 +84,8 @@ export function OrderResult({ order }: { order: PublicOrder }) {
             Pesanan ini telah dibatalkan. Hubungi admin jika ada pertanyaan.
           </div>
         ) : (
-          <ol className="mt-7 grid grid-cols-3">
-            {STEPS.map((step, i) => {
+          <ol className={cn("mt-7 grid", hasRevision ? "grid-cols-5 gap-1" : "grid-cols-3")}>
+            {steps.map((step, i) => {
               const done = i <= activeIndex;
               const current = i === activeIndex;
               return (
@@ -70,27 +93,41 @@ export function OrderResult({ order }: { order: PublicOrder }) {
                   {i > 0 && (
                     <span
                       className={cn(
-                        "absolute top-4 right-1/2 h-0.5 w-full -translate-y-1/2",
+                        "absolute right-1/2 h-0.5 w-full -translate-y-1/2",
+                        hasRevision ? "top-3.5 sm:top-4" : "top-4",
                         i <= activeIndex ? "bg-berry-300" : "bg-matcha-100",
                       )}
                     />
                   )}
                   <span
                     className={cn(
-                      "relative z-10 grid size-8 place-items-center rounded-full border-2 transition",
+                      "relative z-10 grid place-items-center rounded-full border-2 transition",
+                      hasRevision ? "size-7 sm:size-8" : "size-8",
                       done
                         ? "border-berry-400 bg-berry-400 text-white"
                         : "border-matcha-200 bg-white text-matcha-300",
-                      current && order.status !== "completed" && "ring-4 ring-berry-100",
-                      current && order.status === "completed" && "border-matcha-500 bg-matcha-500 ring-4 ring-matcha-100",
+                      current && !isCompletedFinal && "ring-4 ring-berry-100",
+                      current && isCompletedFinal && "border-matcha-500 bg-matcha-500 ring-4 ring-matcha-100",
                     )}
                   >
-                    {done ? <Check className="size-4" strokeWidth={3} /> : <span className="text-xs font-semibold">{i + 1}</span>}
+                    {done ? (
+                      <Check className={cn(hasRevision ? "size-3.5 sm:size-4" : "size-4")} strokeWidth={3} />
+                    ) : (
+                      <span className={cn(hasRevision ? "text-[11px] sm:text-xs" : "text-xs", "font-semibold")}>
+                        {i + 1}
+                      </span>
+                    )}
                   </span>
-                  <span className={cn("mt-2 text-xs font-medium", done ? "text-matcha-800" : "text-matcha-400")}>
+                  <span
+                    className={cn(
+                      "mt-2 font-medium leading-tight",
+                      hasRevision ? "text-[10px] sm:text-xs" : "text-xs",
+                      done ? "text-matcha-800" : "text-matcha-400",
+                    )}
+                  >
                     {step.label}
                   </span>
-                  <span className="text-[10px] text-matcha-400">
+                  <span className={cn(hasRevision ? "text-[9px] sm:text-[10px]" : "text-[10px]", "text-matcha-400")}>
                     {done && stepDates[i] ? formatShortDate(stepDates[i]) : "\u00a0"}
                   </span>
                 </li>
@@ -115,10 +152,10 @@ export function OrderResult({ order }: { order: PublicOrder }) {
         )}
 
         {/* Result files */}
-        {order.status === "completed" && (order.has_file || order.result_link) && (
+        {(order.status === "completed" || order.status === "revision_completed") && (order.has_file || order.result_link) && (
           <div className="mt-5 rounded-2xl border border-matcha-200 bg-white p-4">
             <p className="flex items-center gap-2 text-sm font-semibold text-matcha-800">
-              <FileText className="size-4 text-matcha-600" /> Hasil Pengerjaan
+              <FileText className="size-4 text-matcha-600" /> Hasil {hasRevision ? "Revisi" : "Pengerjaan"}
             </p>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
               {order.has_file && (

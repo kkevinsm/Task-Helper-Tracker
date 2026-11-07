@@ -8,7 +8,10 @@
 do $$
 begin
   if not exists (select 1 from pg_type where typname = 'order_status') then
-    create type public.order_status as enum ('pending', 'in_progress', 'completed', 'cancelled');
+    create type public.order_status as enum ('pending', 'in_progress', 'completed', 'revision', 'revision_completed', 'cancelled');
+  else
+    alter type public.order_status add value if not exists 'revision';
+    alter type public.order_status add value if not exists 'revision_completed';
   end if;
 end$$;
 
@@ -81,9 +84,9 @@ begin
   if new.status = 'in_progress' and old.status is distinct from 'in_progress' and new.started_at is null then
     new.started_at := now();
   end if;
-  if new.status = 'completed' and old.status is distinct from 'completed' then
+  if new.status in ('completed', 'revision_completed') and old.status not in ('completed', 'revision_completed') then
     new.completed_at := now();
-  elsif new.status <> 'completed' then
+  elsif new.status not in ('completed', 'revision_completed') then
     new.completed_at := null;
   end if;
   return new;
@@ -156,9 +159,9 @@ as $$
     o.status,
     o.deadline,
     o.notes,
-    (o.status = 'completed' and o.result_file_path is not null),
-    case when o.status = 'completed' then o.result_file_name end,
-    case when o.status = 'completed' then o.result_link end,
+    (o.status in ('completed', 'revision_completed') and o.result_file_path is not null),
+    case when o.status in ('completed', 'revision_completed') then o.result_file_name end,
+    case when o.status in ('completed', 'revision_completed') then o.result_link end,
     o.started_at,
     o.completed_at,
     o.created_at,
