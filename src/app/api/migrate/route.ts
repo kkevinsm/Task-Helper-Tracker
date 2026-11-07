@@ -2,16 +2,29 @@ import { Client } from "pg";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
   const url = new URL(request.url);
   const key = url.searchParams.get("key");
   if (key !== "migrate-urtaskhelper-2026") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const connectionString =
+  const rawConnectionString =
     process.env.POSTGRES_URL_NON_POOLING ||
     process.env.POSTGRES_URL ||
     process.env.POSTGRES_PRISMA_URL;
+
+  let connectionString: string | undefined = undefined;
+  if (rawConnectionString) {
+    try {
+      const parsed = new URL(rawConnectionString);
+      parsed.searchParams.delete("sslmode");
+      connectionString = parsed.toString();
+    } catch {
+      connectionString = rawConnectionString;
+    }
+  }
 
   const client = connectionString
     ? new Client({
