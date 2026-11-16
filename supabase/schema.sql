@@ -188,6 +188,17 @@ create policy "admin manage results" on storage.objects
 -- Klien mengunduh lewat signed URL yang dibuat server (/api/download/[code])
 -- hanya ketika status pesanan 'completed'.
 
+-- ---------- Telegram bot wizard/draft sessions ----------
+-- Hanya diakses lewat service_role dari backend (/api/telegram/webhook).
+create table if not exists public.telegram_sessions (
+  chat_id    bigint primary key,
+  step       text not null,
+  draft      jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.telegram_sessions enable row level security;
+
 -- =============================================================
 -- LANGKAH TERAKHIR: daftarkan email admin Anda (ganti emailnya!)
 -- =============================================================
